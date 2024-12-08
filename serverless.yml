@@ -1,0 +1,90 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: tricardo003
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: prueba-serverless-node
+#region: us-west-2
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - arn:aws:dynamodb:us-east-1:734455697935:table/PeoplesTable
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - arn:aws:dynamodb:us-east-1:734455697935:table/UsersTable
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - arn:aws:dynamodb:us-east-1:734455697935:table/ApiCache
+
+functions:
+  getData:
+    handler: src/getData.getCharacters
+    timeout: 15
+    events:
+      - httpApi:
+          path: /fusionados
+          method: get
+  saveData:
+    handler: src/saveData.saveUser
+    timeout: 6
+    events:
+      - httpApi:
+          path: /almacenar
+          method: post
+
+  getAllData:
+    handler: src/getAllData.getAll
+    timeout: 6
+    events:
+      - httpApi:
+          path: /historial
+          method: get
+  
+resources:
+  Resources:
+    PeoplesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: PeoplesTable
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+
+    UsersTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: UsersTable
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: id
+            KeyType: HASH
+    ApiCache:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ApiCache
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: cacheKey
+            AttributeType: S
+        KeySchema:
+          - AttributeName: cacheKey
+            KeyType: HASH
+        TimeToLiveSpecification:
+          AttributeName: expiresAt
+          Enabled: true
+
