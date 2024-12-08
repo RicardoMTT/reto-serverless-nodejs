@@ -1,8 +1,12 @@
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
 import AWS from 'aws-sdk';
-import { getCharacters, getMealDetailsWithCache, getMealsByCategoryWithCache, getSpeciesWithCache, saveToCache } from './getData';
+import { getCharacters, } from './getData';
 import { formatMeal, getDietType } from './utils/diet.utils';
+import { getSpeciesWithCache } from './utils/get-species-cache';
+import { getMealsByCategoryWithCache } from './utils/get-meals-category';
+import { getMealDetailsWithCache } from './utils/get-meal-details';
+import { saveToCache } from './utils/save-to-cache';
 
 // Mock de dependencias
 jest.mock('axios');
@@ -28,10 +32,22 @@ jest.mock('aws-sdk', () => {
 // Mock de funciones internas
 jest.mock('./getData', () => ({
   ...jest.requireActual('./getData'),
+}));
+
+jest.mock('./utils/get-species-cache', () => ({
   getSpeciesWithCache: jest.fn(),
+}));
+
+jest.mock('./utils/get-meals-category', () => ({
   getMealsByCategoryWithCache: jest.fn(),
+}));
+
+jest.mock('./utils/get-meal-details', () => ({
   getMealDetailsWithCache: jest.fn(),
-  saveToCache: jest.fn(),  // Mock saveToCache
+}));
+
+jest.mock('./utils/save-to-cache', () => ({
+  saveToCache: jest.fn(),
 }));
 
 describe('getCharacters', () => {
@@ -111,17 +127,12 @@ describe('getCharacters', () => {
       return response.data.meals[0];
     });
 
-      // Mock de saveToCache
-      (saveToCache as jest.Mock).mockResolvedValue(undefined);
-
-    // // Configurar el mock de axios por defecto para evitar el error de destructuring
-    // (axios.get as jest.Mock).mockImplementation(() => ({
-    //     data: {} // Proporciona un objeto vacío por defecto
-    //   }));
+    // Mock de saveToCache
+    (saveToCache as jest.Mock).mockResolvedValue(undefined);
 
   });
 
-  it('debe devolver datos del personaje correctamente', async () => {
+  it('Debe devolver datos del personaje correctamente', async () => {
     const mockUuid = '1234-5678-91011';
     (uuidv4 as jest.Mock).mockReturnValue(mockUuid);
 
@@ -133,33 +144,26 @@ describe('getCharacters', () => {
       .mockResolvedValueOnce({ idMeal: '4', strMeal: 'Meal 4', strCategory: 'Chicken' })
       .mockResolvedValueOnce({ idMeal: '5', strMeal: 'Meal 5', strCategory: 'Beef' });
 
-    const response = await getCharacters();
-    console.log('responseeeee', response);
-    
+    const response = await getCharacters();    
     expect(response.statusCode).toBe(200);
     
   });
 
-  it('debe manejar errores y devolver un error 500', async () => {
+  it('Debe manejar errores y devolver un error 500', async () => {
     const errorMessage = 'API Error';
 
-    // Mockear error en la llamada a getSpeciesWithCache
     (getSpeciesWithCache as jest.Mock).mockRejectedValueOnce(new Error(errorMessage));
     
-    // Mock para get en DynamoDB (cache miss)
     mockDynamoDb.get.mockImplementationOnce(() => ({
         promise: () => Promise.resolve({}),
     }));
     
-    // Mock de axios para simular un error
     (axios.get as jest.Mock).mockRejectedValueOnce(new Error(errorMessage));
 
-
-    // Hacer la llamada y verificar que el error se maneje correctamente
     const response = await getCharacters();
     
-    // Verificar que se devuelve un código 500 y el mensaje de error
     expect(response.statusCode).toBe(500);
+
     const body = JSON.parse(response.body);
     expect(body.error).toBe('API Error');
   });

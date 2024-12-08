@@ -29,11 +29,10 @@ describe('saveUser', () => {
     jest.clearAllMocks();
   });
 
-  it('debe guardar un usuario válido en DynamoDB', async () => {
+  it('Debe guardar un usuario válido en DynamoDB', async () => {
     const mockUuid = '1234-5678-91011';
     (uuidv4 as jest.Mock).mockReturnValue(mockUuid);
 
-    // Mock para put en DynamoDB
     mockDynamoDb.put.mockImplementationOnce(() => ({
       promise: () => Promise.resolve({})
     }));
@@ -65,7 +64,7 @@ describe('saveUser', () => {
     });
   });
 
-  it('debe devolver un error 400 si faltan campos requeridos', async () => {
+  it('Debe devolver un error 400 si faltan campos requeridos', async () => {
     const event = {
       body: JSON.stringify({ name: '' })
     } as any;
@@ -78,7 +77,7 @@ describe('saveUser', () => {
     expect(body.error).toBe('Name and email are required fields');
   });
 
-  it('debe manejar errores de DynamoDB y devolver un error 500', async () => {
+  it('Debe manejar errores de DynamoDB y devolver un error 500', async () => {
     mockDynamoDb.put.mockImplementationOnce(() => ({
       promise: () => Promise.reject(new Error('DynamoDB Error'))
     }));

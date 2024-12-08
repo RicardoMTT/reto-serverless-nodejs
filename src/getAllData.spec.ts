@@ -24,7 +24,7 @@ describe('getAll', () => {
     mockDynamoDb = new AWS.DynamoDB.DocumentClient();
   });
 
-  it('debe devolver elementos paginados correctamente', async () => {
+  it('Debe devolver elementos paginados correctamente', async () => {
     // Mock para el conteo
     mockDynamoDb.scan.mockImplementationOnce(() => ({
       promise: () => Promise.resolve({ Count: 20 })
@@ -46,6 +46,7 @@ describe('getAll', () => {
 
     const body = JSON.parse(response.body);
     expect(body.items).toHaveLength(5);
+    
     expect(body.pagination).toEqual({
       totalItems: 20,
       totalPages: 4,
@@ -56,7 +57,7 @@ describe('getAll', () => {
     });
   });
 
-  it('debe devolver un error si la página solicitada no existe', async () => {
+  it('Debe devolver un error si la página solicitada no existe', async () => {
     mockDynamoDb.scan.mockImplementationOnce(() => ({
       promise: () => Promise.resolve({ Count: 10 })
     }));
@@ -74,7 +75,7 @@ describe('getAll', () => {
     expect(body.message).toBe('La página solicitada no existe. Total de páginas: 2');
   });
 
-  it('debe devolver todos los elementos con paginación por defecto si no se especifican parámetros', async () => {
+  it('Debe devolver todos los elementos con paginación por defecto si no se especifican parámetros', async () => {
     mockDynamoDb.scan.mockImplementationOnce(() => ({
       promise: () => Promise.resolve({ Count: 15 })
     }));
@@ -102,7 +103,7 @@ describe('getAll', () => {
     });
   });
 
-  it('debe devolver un array vacío si no hay elementos en la tabla', async () => {
+  it('Debe devolver un array vacío si no hay elementos en la tabla', async () => {
     mockDynamoDb.scan.mockImplementationOnce(() => ({
       promise: () => Promise.resolve({ Count: 0 })
     }));

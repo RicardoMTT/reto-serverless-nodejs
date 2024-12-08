@@ -6,6 +6,12 @@ const AWS = require('aws-sdk');
 
 const dynamodb = new AWS.DynamoDB.DocumentClient();
 
+/**
+ * Esta función crea un nuevo usuario con un id automatico
+ * en una tabla de DynamoDB llamada UsersTable 
+ * @param event 
+ * @returns 
+ */
 export const saveUser = async(event:APIGatewayProxyEvent) => {
 
   try{
@@ -18,7 +24,6 @@ export const saveUser = async(event:APIGatewayProxyEvent) => {
         };
     }
 
-    // Crear objeto usuario
     const user = {
         id: v4(),
         name,
@@ -26,14 +31,11 @@ export const saveUser = async(event:APIGatewayProxyEvent) => {
         createdAt: new Date().toISOString()
     };
 
-    // Parámetros para DynamoDB
     const params = {
         TableName: 'UsersTable',
         Item: user
     };
 
-    
-    // Guardar en DynamoDB
     await dynamodb.put(params).promise();
     
     return {
