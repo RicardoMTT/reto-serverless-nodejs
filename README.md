@@ -10,60 +10,73 @@ authorName: 'Serverless, Inc.'
 authorAvatar: 'https://avatars1.githubusercontent.com/u/13742415?s=200&v=4'
 -->
 
-# Serverless Framework Node HTTP API on AWS
+# Reto técnico backend
 
-This template demonstrates how to make a simple HTTP API with Node.js running on AWS Lambda and API Gateway using the Serverless Framework.
+API REST desarrollada con Serverless Framework que combina datos de Star Wars (SWAPI) con una API de comidas (TheMealDB) para crear recomendaciones de dietas basadas en la clasificación biológica de las especies de Star Wars.
 
-This template does not include any kind of persistence (database). For more advanced examples, check out the [serverless/examples repository](https://github.com/serverless/examples/) which includes Typescript, Mongo, DynamoDB and other examples.
+## Caracteristicas principales
 
-## Usage
+* Integración de SWAPI y TheMealDB APIs
+* Sistema de caché con DynamoDB (TTL: 30 minutos)
+* Almacenamiento persistente en DynamoDB
+  
+### Despliegue
 
-### Deployment
-
-In order to deploy the example, you need to run the following command:
-
+Para desplegar cambios ejecute el siguiente comando
 ```
 serverless deploy
 ```
 
-After running deploy, you should see output similar to:
+### Manejo de la caché
 
-```
-Deploying "serverless-http-api" to stage "dev" (us-east-1)
-
-✔ Service deployed to stack serverless-http-api-dev (91s)
-
-endpoint: GET - https://xxxxxxxxxx.execute-api.us-east-1.amazonaws.com/
-functions:
-  hello: serverless-http-api-dev-hello (1.6 kB)
-```
-
-_Note_: In current form, after deployment, your API is public and can be invoked by anyone. For production deployments, you might want to configure an authorizer. For details on how to do that, refer to [HTTP API (API Gateway V2) event docs](https://www.serverless.com/framework/docs/providers/aws/events/http-api).
-
-### Invocation
-
-After successful deployment, you can call the created application via HTTP:
-
-```
-curl https://xxxxxxx.execute-api.us-east-1.amazonaws.com/
-```
-
-Which should result in response similar to:
-
-```json
-{ "message": "Go Serverless v4! Your function executed successfully!" }
-```
-
-### Local development
-
-The easiest way to develop and test your function is to use the `dev` command:
-
-```
-serverless dev
-```
 Para el sistema de cache se necesitará crear una nueva tabla en DynamoDB, esta 
 tabla se llamará ApiCache para almacenar las respuestas en caché.
 
+* Implementado usando DynamoDB con TTL
+* Tiempo de caché: 30 minutos
+* Clave de caché: Combinación de tipo y ID
+* Tabla ApiCache
 
-Como practicas recomendadas tenemos reducir el usado de timeout ya que al tener
-un timeout bajo esto reduciria costos ya que se paga por cada 100ms de ejecucion
+### Optimización de costos
+
+Como practicas recomendadas tenemos reducir el uso de timeout ya que al tener
+un timeout bajo esto reduciria costos ya que se paga por cada 100ms de ejecucion.
+```
+saveData:
+    handler: src/saveData.saveUser
+    timeout: 6
+    events:
+      - httpApi:
+          path: /almacenar
+          method: post
+```
+En este metodo le pusimos 6 segundos ya que realiza un proceso que deberia ser rapido, en cambio a esta
+```
+getData:
+    handler: src/getData.getCharacters
+    timeout: 15
+    events:
+      - httpApi:
+          path: /fusionados
+          method: get
+```
+le pusimos un timeout de 15 segundos porque es una funcion un poco mas compleja porque hace llamadas a APIs externas.
+
+
+### Endpoints
+```
+  GET /characters
+```
+Obtiene y fusiona datos de especies de Star Wars con recomendaciones de comidas
+
+
+```
+  POST /almacenar
+```
+Permite almacenar información personalizada (no relacionada con las APIsexternas) en la base de datos
+
+
+```
+  GET /historial:
+```
+Retorna el historial de todas las respuestas almacenadas por el endpoint/fusionados, ordenado cronológicamente y paginado.
