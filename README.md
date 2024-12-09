@@ -72,19 +72,26 @@ Otra practica seria el uso de caché para reducir llamadas API, esto lo hacemos 
 
 
 ### Endpoints
-```
-  GET /characters
-```
-Obtiene y fusiona datos de especies de Star Wars con recomendaciones de comidas
 
+#### Fusionados
+Obtiene y fusiona datos de especies de Star Wars con recomendaciones de comidas [URL](https://wfw96bgzai.execute-api.us-east-1.amazonaws.com/fusionados).
+```
+  GET /fusionados
+```
 
+#### Almacenar
+Permite almacenar información personalizada (no relacionada con las APIs externas) en la base de datos [URL](https://wfw96bgzai.execute-api.us-east-1.amazonaws.com/almacenar).
 ```
   POST /almacenar
+  {
+    "name":"test",
+    "email":"test@gmail.com"
+  }
 ```
-Permite almacenar información personalizada (no relacionada con las APIsexternas) en la base de datos
 
+#### Historial
+Retorna el historial de todas las respuestas almacenadas por el endpoint/fusionados, ordenado cronológicamente y paginado [URL](https://wfw96bgzai.execute-api.us-east-1.amazonaws.com/historial).
 
 ```
   GET /historial:
 ```
-Retorna el historial de todas las respuestas almacenadas por el endpoint/fusionados, ordenado cronológicamente y paginado.
