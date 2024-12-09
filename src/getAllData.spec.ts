@@ -24,13 +24,11 @@ describe('getAll', () => {
     mockDynamoDb = new AWS.DynamoDB.DocumentClient();
   });
 
-  it('Debe devolver elementos paginados correctamente', async () => {
-    // Mock para el conteo
+  it('Debería devolver elementos paginados correctamente', async () => {
+    // Given
     mockDynamoDb.scan.mockImplementationOnce(() => ({
       promise: () => Promise.resolve({ Count: 20 })
     }));
-    
-    // Mock para los items
     mockDynamoDb.scan.mockImplementationOnce(() => ({
       promise: () => Promise.resolve({ Items: generateMockItems(20) })
     }));
@@ -39,8 +37,10 @@ describe('getAll', () => {
       queryStringParameters: { limit: '5', page: '2' }
     };
 
+    // When
     const response = await getAll(event);
 
+    // Then
     expect(mockDynamoDb.scan).toHaveBeenCalledTimes(2);
     expect(response.statusCode).toBe(200);
 
@@ -57,7 +57,8 @@ describe('getAll', () => {
     });
   });
 
-  it('Debe devolver un error si la página solicitada no existe', async () => {
+  it('Debería devolver un error si la página solicitada no existe', async () => {
+    // Given
     mockDynamoDb.scan.mockImplementationOnce(() => ({
       promise: () => Promise.resolve({ Count: 10 })
     }));
@@ -66,8 +67,10 @@ describe('getAll', () => {
       queryStringParameters: { limit: '5', page: '5' }
     };
 
+    // When
     const response = await getAll(event);
 
+    // Then
     expect(mockDynamoDb.scan).toHaveBeenCalledTimes(1);
     expect(response.statusCode).toBe(400);
 
@@ -75,19 +78,21 @@ describe('getAll', () => {
     expect(body.message).toBe('La página solicitada no existe. Total de páginas: 2');
   });
 
-  it('Debe devolver todos los elementos con paginación por defecto si no se especifican parámetros', async () => {
+  it('Debería devolver todos los elementos con paginación por defecto si no se especifican parámetros', async () => {
+    // Given
     mockDynamoDb.scan.mockImplementationOnce(() => ({
       promise: () => Promise.resolve({ Count: 15 })
     }));
-
     mockDynamoDb.scan.mockImplementationOnce(() => ({
       promise: () => Promise.resolve({ Items: generateMockItems(15) })
     }));
 
     const event = { queryStringParameters: null };
 
+    // When
     const response = await getAll(event);
 
+    // Then
     expect(mockDynamoDb.scan).toHaveBeenCalledTimes(2);
     expect(response.statusCode).toBe(200);
 
@@ -103,19 +108,21 @@ describe('getAll', () => {
     });
   });
 
-  it('Debe devolver un array vacío si no hay elementos en la tabla', async () => {
+  it('Debería devolver un array vacío si no hay elementos en la tabla', async () => {
+    // Given
     mockDynamoDb.scan.mockImplementationOnce(() => ({
       promise: () => Promise.resolve({ Count: 0 })
     }));
-
     mockDynamoDb.scan.mockImplementationOnce(() => ({
       promise: () => Promise.resolve({ Items: [] })
     }));
 
     const event = { queryStringParameters: { limit: '5', page: '1' } };
 
+    // When
     const response = await getAll(event);
 
+    // Then
     expect(mockDynamoDb.scan).toHaveBeenCalledTimes(2);
     expect(response.statusCode).toBe(200);
 

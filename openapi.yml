@@ -1,0 +1,231 @@
+openapi: 3.0.0
+info:
+  title: API de Prueba 
+  description: API para manejar datos 
+  version: 1.0.0
+servers:
+  - url: "${cf:${self:service}-${self:provider.stage}.HttpApiUrl}"
+paths:
+
+  /almacenar:
+    post:
+      summary: Guardar usuario
+      description: Almacena los datos de un usuario
+      operationId: saveUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: Nombre del usuario
+                email:
+                  type: string
+                  format: email
+                  description: Correo electrónico del usuario
+              required:
+                - name
+                - email
+      responses:
+        '200':
+          description: Usuario guardado exitosamente
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    description: Identificador único del usuario
+                  name:
+                    type: string
+                    description: Nombre del usuario
+                  email:
+                    type: string
+                    format: email
+                    description: Correo electrónico del usuario
+                  createdAt:
+                    type: string
+                    format: date-time
+                    description: Fecha y hora de creación
+                required:
+                  - id
+                  - name
+                  - email
+                  - createdAt
+        '400':
+          description: Datos de entrada inválidos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Error del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        
+  /fusionados:
+    get:
+      summary: Obtener caracteres fusionados
+      description: Obtiene los datos de caracteres con sus comidas recomendadas
+      operationId: getCharacters
+      responses:
+        '200':
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                  speciesId:
+                    type: string
+                  name:
+                    type: string
+                  classification:
+                    type: string
+                  dietType:
+                    type: string
+                  recommendedMeals:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                        name:
+                          type: string
+                        category:
+                          type: string
+                        area:
+                          type: string
+                        thumbnail:
+                          type: string
+                          format: uri
+                        ingredients:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              ingredient:
+                                type: string
+                              measure:
+                                type: string
+                            required:
+                              - ingredient
+                              - measure
+                  createdAt:
+                    type: string
+                    format: date-time
+                required:
+                  - id
+                  - speciesId
+                  - name
+                  - classification
+                  - dietType
+                  - recommendedMeals
+                  - createdAt
+        '500':
+          description: Error del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+
+  /historial:
+    get:
+      summary: Obtener todos los datos
+      description: Recupera el historial completo de datos
+      operationId: getAll
+      responses:
+        '200':
+          description: Operación exitosa
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        speciesId:
+                          type: string
+                        classification:
+                          type: string
+                        dietType:
+                          type: string
+                        recommendedMeals:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              name:
+                                type: string
+                              area:
+                                type: string
+                              ingredients:
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    ingredient:
+                                      type: string
+                                    measure:
+                                      type: string
+                              thumbnail:
+                                type: string
+                                format: uri
+                              id:
+                                type: string
+                              category:
+                                type: string
+                        createdAt:
+                          type: string
+                          format: date-time
+                        id:
+                          type: string
+                        name:
+                          type: string
+                  pagination:
+                    type: object
+                    properties:
+                      totalItems:
+                        type: integer
+                      totalPages:
+                        type: integer
+                      currentPage:
+                        type: integer
+                      itemsPerPage:
+                        type: integer
+                      hasNextPage:
+                        type: boolean
+                      hasPreviousPage:
+                        type: boolean
+
+        '500':
+          description: Error del servidor
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+        code:
+          type: integer

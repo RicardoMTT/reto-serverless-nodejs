@@ -29,20 +29,21 @@ describe('saveUser', () => {
     jest.clearAllMocks();
   });
 
-  it('Debe guardar un usuario válido en DynamoDB', async () => {
+  it('Debería guardar un usuario válido en DynamoDB', async () => {
+    // Given
     const mockUuid = '1234-5678-91011';
     (uuidv4 as jest.Mock).mockReturnValue(mockUuid);
-
     mockDynamoDb.put.mockImplementationOnce(() => ({
       promise: () => Promise.resolve({})
     }));
-
     const event = {
       body: JSON.stringify({ name: 'John Doe', email: 'john@example.com' })
     } as any;
 
+    // When
     const response = await saveUser(event);
 
+    // Then
     expect(mockDynamoDb.put).toHaveBeenCalledTimes(1);
     expect(mockDynamoDb.put).toHaveBeenCalledWith({
       TableName: 'UsersTable',
@@ -64,30 +65,35 @@ describe('saveUser', () => {
     });
   });
 
-  it('Debe devolver un error 400 si faltan campos requeridos', async () => {
+  it('Debería devolver un error 400 si faltan campos requeridos', async () => {
+    // Given
     const event = {
       body: JSON.stringify({ name: '' })
     } as any;
 
+    // When
     const response = await saveUser(event);
 
+    // Then
     expect(mockDynamoDb.put).not.toHaveBeenCalled();
     expect(response.statusCode).toBe(400);
     const body = JSON.parse(response.body);
     expect(body.error).toBe('Name and email are required fields');
   });
 
-  it('Debe manejar errores de DynamoDB y devolver un error 500', async () => {
+  it('Debedía manejar errores de DynamoDB y devolver un error 500', async () => {
+    // Given
     mockDynamoDb.put.mockImplementationOnce(() => ({
       promise: () => Promise.reject(new Error('DynamoDB Error'))
     }));
-
     const event = {
       body: JSON.stringify({ name: 'Jane Doe', email: 'jane@example.com' })
     } as any;
 
+    // When
     const response = await saveUser(event);
 
+    // Then
     expect(mockDynamoDb.put).toHaveBeenCalledTimes(1);
     expect(response.statusCode).toBe(500);
     const body = JSON.parse(response.body);

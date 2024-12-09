@@ -3,10 +3,26 @@ org: tricardo003
 # "service" is the name of this project. This will also be added to your AWS resource names.
 service: prueba-serverless-node
 #region: us-west-2
+plugins:
+  - serverless-auto-swagger
+
+custom:
+  autoswagger:
+    title: 'API de Prueba Serverless'
+    apiType: 'http'
+    generateSwaggerOnDeploy: true
+    typefiles: ['./openapi.yml']
+    host: "${cf:${self:service}-${self:provider.stage}.HttpApiUrl}"
+    basePath: '/'
+    swaggerPath: swagger # esto define la ruta donde se servirá la documentación
+    schemes:
+      - https
+   
 
 provider:
   name: aws
   runtime: nodejs20.x
+  stage: ${opt:stage, 'dev'}
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -49,6 +65,19 @@ functions:
           method: get
   
 resources:
+  Outputs:
+    HttpApiUrl:
+      Value: !Join
+        - ''
+        - - 'https://'
+          - Ref: HttpApi # Hace referencia al recurso del API Gateway
+          - '.execute-api.'
+          - Ref: AWS::Region
+          - '.amazonaws.com/'
+          - ${self:provider.stage} # Usa el stage configurado en Serverless
+      Export:
+        Name: "${self:service}-${self:provider.stage}-HttpApiUrl"
+        
   Resources:
     PeoplesTable:
       Type: AWS::DynamoDB::Table

@@ -132,10 +132,10 @@ describe('getCharacters', () => {
 
   });
 
-  it('Debe devolver datos del personaje correctamente', async () => {
+  it('Debería devolver datos del personaje correctamente', async () => {
+    // Given
     const mockUuid = '1234-5678-91011';
     (uuidv4 as jest.Mock).mockReturnValue(mockUuid);
-
     // Mock específico para cada llamada a getMealDetailsWithCache
     (getMealDetailsWithCache as jest.Mock)
       .mockResolvedValueOnce({ idMeal: '1', strMeal: 'Meal 1', strCategory: 'Beef' })
@@ -144,24 +144,28 @@ describe('getCharacters', () => {
       .mockResolvedValueOnce({ idMeal: '4', strMeal: 'Meal 4', strCategory: 'Chicken' })
       .mockResolvedValueOnce({ idMeal: '5', strMeal: 'Meal 5', strCategory: 'Beef' });
 
+    // When
     const response = await getCharacters();    
+    
+    // Then
     expect(response.statusCode).toBe(200);
     
   });
 
-  it('Debe manejar errores y devolver un error 500', async () => {
+  it('Debería manejar errores y devolver un error 500', async () => {
+    // Given
     const errorMessage = 'API Error';
-
     (getSpeciesWithCache as jest.Mock).mockRejectedValueOnce(new Error(errorMessage));
-    
     mockDynamoDb.get.mockImplementationOnce(() => ({
         promise: () => Promise.resolve({}),
     }));
     
     (axios.get as jest.Mock).mockRejectedValueOnce(new Error(errorMessage));
 
+    // When
     const response = await getCharacters();
     
+    // Then
     expect(response.statusCode).toBe(500);
 
     const body = JSON.parse(response.body);
