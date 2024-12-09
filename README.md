@@ -19,6 +19,7 @@ API REST desarrollada con Serverless Framework que combina datos de Star Wars (S
 * Integración de SWAPI y TheMealDB APIs
 * Sistema de caché con DynamoDB (TTL: 30 minutos)
 * Almacenamiento persistente en DynamoDB
+* Pruebas unitarias usando Gherkin
   
 ### Despliegue
 
