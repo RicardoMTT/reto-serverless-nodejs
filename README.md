@@ -27,6 +27,13 @@ Para desplegar cambios ejecute el siguiente comando
 serverless deploy
 ```
 
+### Pruebas
+
+Para ejecutar las pruebas a nuestros endpoints podemos ejecutar el comando
+```
+npm test
+```
+
 ### Manejo de la caché
 
 Para el sistema de cache se necesitará crear una nueva tabla en DynamoDB, esta 
@@ -61,6 +68,7 @@ getData:
           method: get
 ```
 le pusimos un timeout de 15 segundos porque es una funcion un poco mas compleja porque hace llamadas a APIs externas.
+Otra practica seria el uso de caché para reducir llamadas API, esto lo hacemos creando una tabla de dynamoDb llamada ApiCache.
 
 
 ### Endpoints
