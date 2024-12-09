@@ -39,8 +39,8 @@ tabla se llamará ApiCache para almacenar las respuestas en caché.
 
 ### Optimización de costos
 
-Como practicas recomendadas tenemos reducir el uso de timeout ya que al tener
-un timeout bajo esto reduciria costos ya que se paga por cada 100ms de ejecucion.
+Como practicas recomendada tenemos que reducir el uso de timeout ya que al tener
+un timeout bajo esto reduciria los costos ya que se paga por el tiempo de cada ejecucion.
 ```
 saveData:
     handler: src/saveData.saveUser
