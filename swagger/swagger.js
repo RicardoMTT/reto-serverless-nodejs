@@ -67,7 +67,7 @@
   "definitions": {},
   "securityDefinitions": {},
   "basePath": "/",
-  "host": "https://wfw96bgzai.execute-api.us-east-1.amazonaws.com/dev",
+  "host": "https://wfw96bgzai.execute-api.us-east-1.amazonaws.com",
   "schemes": [
     "https"
   ]

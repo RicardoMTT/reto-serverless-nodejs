@@ -4,7 +4,7 @@ info:
   description: API para manejar datos 
   version: 1.0.0
 servers:
-  - url: "${cf:${self:service}-${self:provider.stage}.HttpApiUrl}"
+  - url: "https://wfw96bgzai.execute-api.us-east-1.amazonaws.com/dev"
 paths:
 
   /almacenar:

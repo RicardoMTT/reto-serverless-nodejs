@@ -12,7 +12,7 @@ custom:
     apiType: 'http'
     generateSwaggerOnDeploy: true
     typefiles: ['./openapi.yml']
-    host: "${cf:${self:service}-${self:provider.stage}.HttpApiUrl}"
+    host: "https://wfw96bgzai.execute-api.us-east-1.amazonaws.com"
     basePath: '/'
     swaggerPath: swagger # esto define la ruta donde se servirá la documentación
     schemes:
