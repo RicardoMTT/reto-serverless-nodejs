@@ -19,6 +19,7 @@ API REST desarrollada con Serverless Framework que combina datos de Star Wars (S
 * Integración de SWAPI y TheMealDB APIs
 * Sistema de caché con DynamoDB (TTL: 30 minutos)
 * Almacenamiento persistente en DynamoDB
+* Pruebas unitarias usando Gherkin
   
 ### Despliegue
 
@@ -72,6 +73,8 @@ Otra practica seria el uso de caché para reducir llamadas API, esto lo hacemos 
 
 
 ### Endpoints
+
+Documentación [URL](https://wfw96bgzai.execute-api.us-east-1.amazonaws.com/fusionados](https://prueba-9731.postman.co/workspace/prueba-Workspace~54439b17-c3a4-4ca1-976e-9676ebd89cc5/collection/19277596-3b22f0b9-5cf0-4b7f-90fa-cc2876d16e16?action=share&creator=19277596&action_performed=login)).
 
 #### Fusionados
 Obtiene y fusiona datos de especies de Star Wars con recomendaciones de comidas [URL](https://wfw96bgzai.execute-api.us-east-1.amazonaws.com/fusionados).
